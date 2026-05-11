@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/categories")
@@ -36,6 +38,25 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.filterCategories(name, active, priority));
     }
 
+    @Operation(summary = "Obtener categoría por id - versión 2", description = "Devuelve una categoría con información adicional de versión")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Categoría encontrada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @GetMapping("/v2/{id}")
+    public ResponseEntity<Map<String, Object>> getCategoryByIdV2(@PathVariable Long id) {
+        Category category = categoryService.getCategoryById(id);
+
+        Map<String, Object> response = Map.of(
+                "apiVersion", "v2",
+                "generatedAt", LocalDate.now(),
+                "data", category
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "Obtener categoría por id", description = "Devuelve una categoría concreta a partir de su identificador")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Categoría encontrada correctamente"),
@@ -57,6 +78,25 @@ public class CategoryController {
     public ResponseEntity<Category> createCategory(@Valid @RequestBody Category category) {
         Category savedCategory = categoryService.saveCategory(category);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCategory);
+    }
+
+    @Operation(summary = "Crear categoría - versión 2", description = "Crea una categoría y devuelve metadatos de versión")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Categoría creada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada no válidos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @PostMapping("/v2")
+    public ResponseEntity<Map<String, Object>> createCategoryV2(@Valid @RequestBody Category category) {
+        Category createdCategory = categoryService.saveCategory(category);
+
+        Map<String, Object> response = Map.of(
+                "apiVersion", "v2",
+                "message", "Category created successfully",
+                "data", createdCategory
+        );
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @Operation(summary = "Actualizar categoría", description = "Actualiza una categoría existente a partir de su id")
