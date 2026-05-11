@@ -1,0 +1,21 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/categories/1"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "id": 1,
+      "name": "Cafe",
+      "description": "Cafeterias para estudiar",
+      "colorHex": "#A0522D",
+      "priority": 1,
+      "active": true,
+      "createdAt": "2025-10-01"
+    }
+  }
+}
