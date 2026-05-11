@@ -111,6 +111,26 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.updateCategory(id, category));
     }
 
+    @Operation(summary = "Actualizar categoría - versión 2", description = "Actualiza una categoría y devuelve metadatos de versión")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Categoría actualizada correctamente"),
+            @ApiResponse(responseCode = "400", description = "Datos de entrada no válidos"),
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @PutMapping("/v2/{id}")
+    public ResponseEntity<Map<String, Object>> updateCategoryV2(@PathVariable Long id, @Valid @RequestBody Category category) {
+        Category updatedCategory = categoryService.updateCategory(id, category);
+
+        Map<String, Object> response = Map.of(
+                "apiVersion", "v2",
+                "message", "Category updated successfully",
+                "data", updatedCategory
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
     @Operation(summary = "Eliminar categoría", description = "Elimina una categoría a partir de su id")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Categoría eliminada correctamente"),
@@ -121,5 +141,23 @@ public class CategoryController {
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
+    }
+    @Operation(summary = "Eliminar categoría - versión 2", description = "Elimina una categoría y devuelve confirmación con metadatos de versión")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Categoría eliminada correctamente"),
+            @ApiResponse(responseCode = "404", description = "Categoría no encontrada"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @DeleteMapping("/v2/{id}")
+    public ResponseEntity<Map<String, Object>> deleteCategoryV2(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
+
+        Map<String, Object> response = Map.of(
+                "apiVersion", "v2",
+                "message", "Category deleted successfully",
+                "deletedId", id
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
