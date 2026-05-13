@@ -1,0 +1,22 @@
+services:
+  mariadb-dev:
+    image: mariadb:11
+    container_name: coffeeandstudy-mariadb-dev
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: coffeeandstudy
+      MARIADB_USER: coffeeuser
+      MARIADB_PASSWORD: 1234
+    ports:
+      - "3307:3306"
+    volumes:
+      - mariadb_dev_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mariadb_dev_data:
